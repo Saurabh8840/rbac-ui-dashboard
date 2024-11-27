@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/sidebar"
-import { Footer } from "@/components/footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -10,6 +9,7 @@ export const metadata: Metadata = {
   title: "RBAC Dashboard",
   description: "Role-Based Access Control Dashboard",
 }
+
 
 export default function RootLayout({
   children,
