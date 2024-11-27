@@ -31,11 +31,20 @@ export function UserManagement({ users, setUsers, roles }: UserManagementProps) 
   const [newUser, setNewUser] = useState<Omit<User, 'id'>>({ name: '', email: '', role: '', status: 'Active' })
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [emailError, setEmailError] = useState<string>('')
 
   const handleAddUser = async () => {
+    // Validate email
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(newUser.email)) {
+      setEmailError('Please enter a valid email address.');
+      return; // Do not proceed if the email is invalid
+    }
+    
     const addedUser = await addUser(newUser)
     setUsers([...users, addedUser])
     setNewUser({ name: '', email: '', role: '', status: 'Active' })
+    setEmailError('') // Clear email error if user is added successfully
     setIsModalOpen(false)
   }
 
@@ -65,9 +74,7 @@ export function UserManagement({ users, setUsers, roles }: UserManagementProps) 
           className="max-w-sm"
         />
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          
           <DialogTrigger asChild>
-
             <Button onClick={() => setIsModalOpen(true)}>Add User</Button>
           </DialogTrigger>
           <DialogContent>
@@ -87,17 +94,24 @@ export function UserManagement({ users, setUsers, roles }: UserManagementProps) 
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
+  <Label htmlFor="email" className="text-right">
+    Email
+  </Label>
+  <Input
+    id="email"
+    type="email"
+    value={newUser.email}
+    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+    className="col-span-3"
+    required
+    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    title="Please enter a valid email address."
+  />
+  {emailError && (
+    <p className="col-span-4 text-center text-red-500 text-sm mt-1">{emailError}</p>
+  )}
+</div>
+
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="role" className="text-right">
                   Role
@@ -166,5 +180,3 @@ export function UserManagement({ users, setUsers, roles }: UserManagementProps) 
     </div>
   )
 }
-
-
